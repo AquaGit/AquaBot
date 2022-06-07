@@ -2,11 +2,15 @@ import telebot, python_weather
 from telebot import types
 import random
 from tunelgame.mg import get_map_cell
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 
-TOKEN = "5568984364:AAGSF5j7CgeIAAB8DzokqPHYAv-2MDaVvDk"
-bot = telebot.TeleBot(TOKEN)
+TOKEN = os.getenv('BOT_TOKEN')
 
+bot_token = TOKEN
+bot = telebot.TeleBot(token=bot_token)
 # Game Tunel
 cols, rows = 8, 8
 maps = {}
