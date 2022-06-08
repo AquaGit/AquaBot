@@ -1,95 +1,17 @@
 import telebot, python_weather
 from telebot import types
 import random
+from tunelgame.gamemain import get_map_str, cols, rows, maps
 from tunelgame.mg import get_map_cell
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
 
-TOKEN = os.getenv('BOT_TOKEN')
+TOKEN = os.getenv("BOT_TOKEN")
 
 bot_token = TOKEN
 bot = telebot.TeleBot(token=bot_token)
-# Game Tunel
-cols, rows = 8, 8
-maps = {}
-
-
-@bot.message_handler(commands=["tunelgame"])
-def play_message(message):
-    map_cell = get_map_cell(cols, rows)
-
-    user_data = {"map": map_cell, "x": 0, "y": 0}
-
-    maps[message.chat.id] = user_data
-
-    bot.send_message(
-        message.from_user.id, get_map_str(map_cell, (0, 0)), reply_markup=keyboard
-    )
-
-
-# keyboard
-keyboard = telebot.types.InlineKeyboardMarkup()
-keyboard.row(
-    telebot.types.InlineKeyboardButton("←", callback_data="left"),
-    telebot.types.InlineKeyboardButton("↑", callback_data="up"),
-    telebot.types.InlineKeyboardButton("↓", callback_data="down"),
-    telebot.types.InlineKeyboardButton("→", callback_data="right"),
-)
-# map
-def get_map_str(map_cell, player):
-    map_str = ""
-    for y in range(rows * 2 - 1):
-        for x in range(cols * 2 - 1):
-            if map_cell[x + y * (cols * 2 - 1)]:
-                map_str += "⬛"
-            elif (x, y) == player:
-                map_str += "🔴"
-            else:
-                map_str += "⬜"
-        map_str += "\n"
-
-    return map_str
-
-
-# controll
-@bot.callback_query_handler(func=lambda call: True)
-def callback_func(query):
-    user_data = maps[query.message.chat.id]
-    new_x, new_y = user_data["x"], user_data["y"]
-
-    if query.data == "left":
-        new_x -= 1
-    if query.data == "right":
-        new_x += 1
-    if query.data == "up":
-        new_y -= 1
-    if query.data == "down":
-        new_y += 1
-
-    if new_x < 0 or new_x > 2 * cols - 2 or new_y < 0 or new_y > rows * 2 - 2:
-        return None
-    if user_data["map"][new_x + new_y * (cols * 2 - 1)]:
-        return None
-
-    user_data["x"], user_data["y"] = new_x, new_y
-
-    if new_x == cols * 2 - 2 and new_y == rows * 2 - 2:
-        bot.edit_message_text(
-            chat_id=query.message.chat.id,
-            message_id=query.message.id,
-            text="Ви перемогли, Аква ставить тобі лайк",
-        )
-        return None
-
-    bot.edit_message_text(
-        chat_id=query.message.chat.id,
-        message_id=query.message.id,
-        text=get_map_str(user_data["map"], (new_x, new_y)),
-        reply_markup=keyboard,
-    )
-
 
 # bot menu
 @bot.message_handler(commands=["start"])
@@ -112,8 +34,8 @@ def start(message):
         "Wassup, {0.first_name}!".format(message.from_user),
         reply_markup=markup,
     )
-
-
+        
+# add menu
 @bot.message_handler(content_types=["text"])
 def bot_message(message):
     if message.chat.type == "private":
@@ -134,12 +56,22 @@ def bot_message(message):
         elif message.text == "👩‍🏭 Tunel":
             bot.send_message(
                 message.chat.id,
-                "Обрано: 👩‍🏭\nДля старту напишіть\n/tunelgame",
+                "Обрано: 👩‍🏭",
             )
             bot.send_message(
                 message.chat.id,
-                "Ваше завдання: дійти до правого нижнього кута по заданому лабіринту.\nУдачі брат!",
+                "Ваше завдання: дійти до правого нижнього кута по заданому лабіринту.\nУдачі 🖤",
             )
+            map_cell = get_map_cell(cols, rows)
+
+            user_data = {"map": map_cell, "x": 0, "y": 0}
+
+            maps[message.chat.id] = user_data
+
+            bot.send_message(
+                message.from_user.id, get_map_str(map_cell, (0, 0)), reply_markup=keyboard
+            )
+
 
         elif message.text == "🦅 Орел Решка":
             bot.send_message(message.chat.id, "Підкидую монетку\nУхх...\n")
@@ -244,6 +176,55 @@ def bot_message(message):
 
         else:
             bot.send_message(message.chat.id, "Не зрозумів тебе 😬")
+
+
+
+
+# tunel game
+keyboard = telebot.types.InlineKeyboardMarkup()
+keyboard.row(
+    telebot.types.InlineKeyboardButton("←", callback_data="left"),
+    telebot.types.InlineKeyboardButton("↑", callback_data="up"),
+    telebot.types.InlineKeyboardButton("↓", callback_data="down"),
+    telebot.types.InlineKeyboardButton("→", callback_data="right"),
+)
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def callback_func(query):
+    user_data = maps[query.message.chat.id]
+    new_x, new_y = user_data["x"], user_data["y"]
+
+    if query.data == "left":
+        new_x -= 1
+    if query.data == "right":
+        new_x += 1
+    if query.data == "up":
+        new_y -= 1
+    if query.data == "down":
+        new_y += 1
+
+    if new_x < 0 or new_x > 2 * cols - 2 or new_y < 0 or new_y > rows * 2 - 2:
+        return None
+    if user_data["map"][new_x + new_y * (cols * 2 - 1)]:
+        return None
+
+    user_data["x"], user_data["y"] = new_x, new_y
+
+    if new_x == cols * 2 - 2 and new_y == rows * 2 - 2:
+        bot.edit_message_text(
+            chat_id=query.message.chat.id,
+            message_id=query.message.id,
+            text="Чудово! Аква ставить тобі лайк! 👍",
+        )
+        return None
+
+    bot.edit_message_text(
+        chat_id=query.message.chat.id,
+        message_id=query.message.id,
+        text=get_map_str(user_data["map"], (new_x, new_y)),
+        reply_markup=keyboard,
+    )
 
 
 bot.polling(none_stop=True)
