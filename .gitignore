@@ -1,0 +1,6 @@
+venv/
+.vscode
+__pycache__/
+trash/
+.env
+.env.local
