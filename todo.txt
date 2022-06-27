@@ -1,3 +1,5 @@
 1. X vs O for tg group
 2. English ( 1 random word - 4 answer)
-3. item забрати нахуй
+3. item забрати нахуй +
+4. create music menu where bot send u random music from AQUA Playlist
+    4.1 create super user 4 add music to db
