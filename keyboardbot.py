@@ -17,8 +17,16 @@ class Keyboard:
         return Keyboard((Message.MVCBOOK, Message.COIN, Message.BACK))
 
     @classmethod
+    def weather(cls):
+        return Keyboard((Message.LOCAL, Message.BACK))
+
+    @classmethod
     def music(cls):
         return Keyboard((Message.RANDOM, Message.PLAYLIST, Message.ADDTRACK, Message.BACK))
+
+    @classmethod
+    def about(cls):
+        return Keyboard((Message.INSTAGRAM, Message.TELEGRAM, Message.BACK))
 
 class Message:
 # MAIN MENU
@@ -30,10 +38,15 @@ class Message:
     MVCBOOK = 'MVCBOOK GAME'
     COIN = 'COIN GAME'
     BACK = 'BACK'
+# WEATHER MENU
+    LOCAL = 'LOCAL WEATHER'
 # MUSIC MENU
     RANDOM = 'RANDOM'
     PLAYLIST = 'PLAYLIST'
-    ADDTRACK = 'ADD TRACK' 
+    ADDTRACK = 'ADD TRACK'
+# ABOUT MENU
+    INSTAGRAM = 'INSTAGRAM'
+    TELEGRAM = 'TELEGRAM'
     
 
 
